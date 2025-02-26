@@ -22,6 +22,21 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
+    const jobsCollection = client.db('solo-db').collection('jobs')
+
+    // save jobs to mongodb
+    app.post('/add-job', async (req, res) => {
+      const jobData = req.body;
+      const result = await jobsCollection.insertOne(jobData)
+      res.send(result)
+    })
+
+    // get jobs data from mongoDB
+    app.get('/jobs', async (req, res) => {
+      const result = await jobsCollection.find().toArray()
+      res.send(result)
+    })
+
     // Send a ping to confirm a successful connection
     await client.db('admin').command({ ping: 1 })
     console.log(
