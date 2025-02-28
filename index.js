@@ -38,17 +38,37 @@ async function run() {
     })
 
     // get all jobs posted by a specific user
-    app.get('/jobs/:email', async(req,res)=>{
+    app.get('/jobs/:email', async (req, res) => {
       const email = req.params.email;
-      const query = {'buyer.email': email}
+      const query = { 'buyer.email': email }
       const result = await jobsCollection.find(query).toArray()
       res.send(result)
     })
 
-    app.delete('/job/:id', async(req,res)=>{
+    app.delete('/job/:id', async (req, res) => {
       const id = req.params.id;
-      const query ={_id:new ObjectId(id)}
+      const query = { _id: new ObjectId(id) }
       const result = await jobsCollection.deleteOne(query)
+      res.send(result)
+    })
+
+    // get single data
+    app.get('/job/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await jobsCollection.findOne(query)
+      res.send(result)
+    })
+
+    app.put('/update-job/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) }
+      const jobData = req.body;
+      const updateDoc = {
+        $set: jobData
+      }
+      const options = { upsert: true }
+      const result = await jobsCollection.updateOne(filter, updateDoc, options)
       res.send(result)
     })
 
